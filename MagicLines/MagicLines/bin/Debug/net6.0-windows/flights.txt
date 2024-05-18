@@ -1,0 +1,11 @@
+Warszawa-Londyn,150
+Warszawa-Nowy Jork,500
+Warszawa-Tokio,800
+Warszawa-Lublin,100
+Warszawa-Berlin,200
+Berlin-Pekin,1000
+Berlin-Paryz,300
+Berlin-Mediolan,200
+Lublin-Madryt,600
+Lublin-Mediolan,400
+Katowice-Praga,100
