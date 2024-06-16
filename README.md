@@ -1,4 +1,4 @@
-### System Rezerwacji Lotów
+### System Rezerwacji Lotów - Magic Lines
 
 Witaj w naszym programie do rezerwacji lotów! Ten program umożliwia użytkownikom wybór lotu i zarządzanie rezerwacjami biletów za pomocą prostego interfejsu tekstowego. Poniżej znajdziesz szczegółowy opis funkcji oraz instrukcję obsługi.
 
