@@ -49,14 +49,14 @@ Po uruchomieniu programu użytkownicy mają do dyspozycji następujące opcje:
 
 #### Struktura Plików
 
-- **`flight_data.txt`**
+- **`flights.txt`**
   - Przechowuje szczegóły lotów, w tym trasę, cenę podstawową.
   - Format danych: `numerTrasy,nazwaTrasy,cenaPodstawowa`
 
 - **`tickets_data.json`**
   - Przechowuje zarezerwowane bilety w formacie JSON, zawierające numer biletu, trasę, klasę miejsc, cenę oraz dane pasażera.
 
-- **`flights.txt`**
+- **`flight_data.txt`**
   - Przechowuje lisczbę dostępnych miejsc.
   - Format danych:`miejscaBiznes,miejscaEconomyPlus,miejscaEconomy,miejscaEconomyOkno`
 
@@ -75,7 +75,7 @@ Ten program korzysta z następujących bibliotek:
 ### Konfiguracja
 
 Upewnij się, że w folderze z programem znajdują się następujące pliki:
-- `flight_data.txt` (początkowo pusty lub utworzony przez program, format danych jak powyżej)
+- `flights.txt` (początkowo pusty lub utworzony przez program, format danych jak powyżej)
 - `tickets_data.json` (początkowo pusty lub utworzony przez program)
-- `flights.txt`(Liczba aktulanie dostpnych miejsc, jest tworzony przez program gdy go nie ma i na bieżąco aktualizowany przez program)
+- `flight_data.txt`(Liczba aktulanie dostpnych miejsc, jest tworzony przez program gdy go nie ma i na bieżąco aktualizowany przez program)
   
