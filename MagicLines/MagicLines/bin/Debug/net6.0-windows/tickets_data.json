@@ -1,0 +1,47 @@
+{
+  "1001": {
+    "Number": 1001,
+    "Route": "Warszawa-Londyn",
+    "Seat": "Economy",
+    "Price": 150,
+    "FirstName": "k",
+    "LastName": "k",
+    "Email": "k"
+  },
+  "1002": {
+    "Number": 1002,
+    "Route": "Warszawa-Londyn",
+    "Seat": "Economy",
+    "Price": 150,
+    "FirstName": "Kacper",
+    "LastName": "Olkis",
+    "Email": "a"
+  },
+  "1004": {
+    "Number": 1004,
+    "Route": "Warszawa-Londyn",
+    "Seat": "Economy",
+    "Price": 150,
+    "FirstName": "k",
+    "LastName": "k",
+    "Email": "k"
+  },
+  "1005": {
+    "Number": 1005,
+    "Route": "Warszawa-Lublin",
+    "Seat": "Economy (Window)",
+    "Price": 360,
+    "FirstName": "",
+    "LastName": "",
+    "Email": ""
+  },
+  "1006": {
+    "Number": 1006,
+    "Route": "Warszawa-Lublin",
+    "Seat": "Economy (Window)",
+    "Price": 360,
+    "FirstName": "fd",
+    "LastName": "d",
+    "Email": "f"
+  }
+}

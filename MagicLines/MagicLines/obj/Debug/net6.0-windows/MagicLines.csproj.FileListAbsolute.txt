@@ -1,0 +1,15 @@
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\bin\Debug\net6.0-windows\MagicLines.exe
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\bin\Debug\net6.0-windows\MagicLines.deps.json
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\bin\Debug\net6.0-windows\MagicLines.runtimeconfig.json
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\bin\Debug\net6.0-windows\MagicLines.dll
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\bin\Debug\net6.0-windows\MagicLines.pdb
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\MagicLines.csproj.ResolveComReference.cache
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\MagicLines.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\MagicLines.AssemblyInfoInputs.cache
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\MagicLines.AssemblyInfo.cs
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\MagicLines.csproj.CoreCompileInputs.cache
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\MagicLines.dll
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\refint\MagicLines.dll
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\MagicLines.pdb
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\MagicLines.genruntimeconfig.cache
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\ref\MagicLines.dll
