@@ -2,6 +2,11 @@
 
 Witaj w naszym programie do rezerwacji lotów! Ten program umożliwia użytkownikom wybór lotu i zarządzanie rezerwacjami biletów za pomocą prostego interfejsu tekstowego. Poniżej znajdziesz szczegółowy opis funkcji oraz instrukcję obsługi.
 
+#### Diagram UML
+
+![UML](https://github.com/sikl0/magiclines/assets/45985086/e75f112c-5582-454a-aab5-a12f6d01acd5)
+
+
 #### Funkcje
 
 1. **Rezerwacja Lotu**
