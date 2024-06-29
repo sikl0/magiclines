@@ -82,5 +82,5 @@ Ten program korzysta z następujących bibliotek:
 Upewnij się, że w folderze z programem znajdują się następujące pliki:
 - `flights.txt` (początkowo pusty lub utworzony przez program, format danych jak powyżej). Można dopisywać nowe kierunki lotów.
 - `tickets_data.json` (początkowo pusty lub utworzony przez program)
-- `flight_data.txt`(Liczba aktulanie dostpnych miejsc, jest tworzony przez program gdy go nie ma i na bieżąco aktualizowany przez program)
+- `flight_data.txt`(Liczba aktulanie dostępnych miejsc, jest tworzony przez program gdy go nie ma i na bieżąco aktualizowany przez program)
   
