@@ -13,3 +13,7 @@ C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\ob
 C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\MagicLines.pdb
 C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\MagicLines.genruntimeconfig.cache
 C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\ref\MagicLines.dll
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\MagicLines.csproj.AssemblyReference.cache
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\bin\Debug\net6.0-windows\BCrypt.Net-Next.dll
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\bin\Debug\net6.0-windows\Newtonsoft.Json.dll
+C:\Users\kacpe\Documents\Projekty\MagicLines\magiclines\MagicLines\MagicLines\obj\Debug\net6.0-windows\MagicLines.csproj.CopyComplete

@@ -1,89 +1,463 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
-using System.Text.Json;
+using Newtonsoft.Json;
+using BCrypt.Net;
+using System.Xml;
 
-class Program
+// Klasy pomocnicze
+namespace AdvancedFlightReservationSystem.Models
 {
-    private static Dictionary<int, Flight> flights = new Dictionary<int, Flight>();
-    private static Dictionary<int, Ticket> tickets = new Dictionary<int, Ticket>();
-    private static int ticketNumber = 1000;
-
-    static void Main(string[] args)
+    public class User
     {
-        InitializeFlights();
-        LoadFlightData();
-        LoadTicketData();
+        public string Username { get; set; }
+        public string PasswordHash { get; set; }
+        public string Email { get; set; }
+        public int LoyaltyPoints { get; set; }
+    }
 
-        while (true)
+    public class Flight
+    {
+        public string Route { get; private set; }
+        public int BasePrice { get; private set; }
+        private Dictionary<string, int> seats = new Dictionary<string, int>();
+        private DateTime flightDate;
+        private Random random = new Random();
+
+        public Flight(string route, int basePrice)
         {
-            Console.Clear();
-            Console.WriteLine("1. Zarezerwuj lot");
-            Console.WriteLine("2. Sprawdź lot");
-            Console.WriteLine("\n0. Wyjdź");
-            Console.Write("\nWybierz opcję: ");
-            string option = Console.ReadLine();
+            Route = route;
+            BasePrice = basePrice;
+            seats["Business"] = 18;
+            seats["Economy Plus"] = 18;
+            seats["Economy"] = 96;
+            seats["Economy (Window)"] = 52;
+            flightDate = GenerateFlightDate();
+        }
 
-            switch (option)
+        public Flight(string route, int basePrice, Dictionary<string, int> seats)
+        {
+            Route = route;
+            BasePrice = basePrice;
+            this.seats = seats;
+            flightDate = GenerateFlightDate();
+        }
+
+        private DateTime GenerateFlightDate()
+        {
+            int daysToAdd = random.Next(1, 11);
+            int hoursToAdd = random.Next(0, 24);
+            int minutesToAdd = random.Next(0, 12) * 5;
+            return DateTime.Today.AddDays(daysToAdd).AddHours(hoursToAdd).AddMinutes(minutesToAdd);
+        }
+
+        public string GetFlightDate()
+        {
+            return flightDate.ToString("yyyy-MM-dd HH:mm");
+        }
+
+        public void DisplaySeats()
+        {
+            Console.WriteLine($"1. Economy: {BasePrice} PLN ({seats["Economy"]})");
+            Console.WriteLine($"2. Economy (miejsce przy oknie): {BasePrice * 1.2} PLN ({seats["Economy (Window)"]})");
+            Console.WriteLine($"3. Economy Plus: {BasePrice * 2.0} PLN ({seats["Economy Plus"]})");
+            Console.WriteLine($"4. Business: {BasePrice * 3.0} PLN ({seats["Business"]})");
+        }
+
+        public Ticket BookSeat(string classOption)
+        {
+            string selectedClass = classOption switch
             {
-                case "1":
-                    BookFlight();
-                    break;
-                case "2":
-                    CheckFlight();
-                    break;
-                case "0":
-                    SaveFlightData();
-                    SaveTicketData();
-                    return;
-                default:
-                    Console.WriteLine("Niepoprawna opcja, spróbuj ponownie. \nNaciśnij dowolny klawisz, żeby wrócić do menu");
-                    Console.ReadKey();
-                    break;
+                "1" => "Economy",
+                "2" => "Economy (Window)",
+                "3" => "Economy Plus",
+                "4" => "Business",
+                _ => null
+            };
+
+            if (selectedClass == null || seats[selectedClass] == 0)
+            {
+                Console.WriteLine("Niepoprawna opcja lub brak miejsc w wybranej klasie.");
+                return null;
+            }
+
+            seats[selectedClass]--;
+            double priceMultiplier = selectedClass switch
+            {
+                "Economy" => 1.0,
+                "Economy (Window)" => 1.2,
+                "Economy Plus" => 2.0,
+                "Business" => 3.0,
+                _ => 1.0
+            };
+            double price = BasePrice * priceMultiplier;
+            return new Ticket
+            {
+                Route = Route,
+                Seat = selectedClass,
+                Price = price
+            };
+        }
+
+        public void CancelSeat(string seatClass)
+        {
+            if (seats.ContainsKey(seatClass))
+            {
+                seats[seatClass]++;
+            }
+        }
+
+        public string SeatsToString()
+        {
+            return $"{seats["Business"]},{seats["Economy Plus"]},{seats["Economy"]},{seats["Economy (Window)"]}";
+        }
+    }
+
+    public class Reservation
+    {
+        public User User { get; set; }
+        public Flight Flight { get; set; }
+        public string SeatClass { get; set; }
+        public int PassengerCount { get; set; }
+        public DateTime ReservationTime { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Flight.Route}, {Flight.GetFlightDate()}, Klasa: {SeatClass}, Pasażerów: {PassengerCount}, Rezerwacja: {ReservationTime:dd.MM.yyyy HH:mm}";
+        }
+    }
+
+    public class Ticket
+    {
+        public int Number { get; set; }
+        public string Route { get; set; }
+        public string Seat { get; set; }
+        public double Price { get; set; }
+
+        public override string ToString()
+        {
+            return $"Bilet nr {Number}, Trasa: {Route}, Klasa: {Seat}, Cena: {Price} PLN";
+        }
+    }
+}
+
+// Serwisy
+public class UserService
+{
+    private List<AdvancedFlightReservationSystem.Models.User> users = new List<AdvancedFlightReservationSystem.Models.User>();
+    private readonly string usersFilePath = "users.json";
+
+    public void LoadUsers()
+    {
+        if (File.Exists(usersFilePath))
+        {
+            string json = File.ReadAllText(usersFilePath);
+            users = JsonConvert.DeserializeObject<List<AdvancedFlightReservationSystem.Models.User>>(json) ?? new List<AdvancedFlightReservationSystem.Models.User>();
+        }
+    }
+
+    public void SaveUsers()
+    {
+        string json = JsonConvert.SerializeObject(users, Newtonsoft.Json.Formatting.Indented);
+        File.WriteAllText(usersFilePath, json);
+    }
+
+    public bool RegisterUser(string username, string password, string email)
+    {
+        if (users.Any(u => u.Username == username || u.Email == email))
+        {
+            return false;
+        }
+
+        var user = new AdvancedFlightReservationSystem.Models.User
+        {
+            Username = username,
+            Email = email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(password)
+        };
+
+        users.Add(user);
+        SaveUsers();
+        return true;
+    }
+
+    public AdvancedFlightReservationSystem.Models.User AuthenticateUser(string username, string password)
+    {
+        var user = users.FirstOrDefault(u => u.Username == username);
+        if (user != null && BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+        {
+            return user;
+        }
+        return null;
+    }
+
+    public bool ChangePassword(AdvancedFlightReservationSystem.Models.User user, string newPassword)
+    {
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        SaveUsers();
+        return true;
+    }
+
+    public bool ChangeEmail(AdvancedFlightReservationSystem.Models.User user, string newEmail)
+    {
+        if (users.Any(u => u.Email == newEmail))
+        {
+            return false;
+        }
+
+        user.Email = newEmail;
+        SaveUsers();
+        return true;
+    }
+
+    public void AddLoyaltyPoints(AdvancedFlightReservationSystem.Models.User user, int points)
+    {
+        user.LoyaltyPoints += points;
+        SaveUsers();
+    }
+}
+
+public class FlightService
+{
+    private Dictionary<int, AdvancedFlightReservationSystem.Models.Flight> flights = new Dictionary<int, AdvancedFlightReservationSystem.Models.Flight>();
+    private readonly string flightsFilePath = "flight_data.txt";
+
+    public void LoadFlights()
+    {
+        // Nowe ładowanie lotów z pliku flight_data.txt
+        if (File.Exists(flightsFilePath))
+        {
+            string[] lines = File.ReadAllLines(flightsFilePath);
+            foreach (var line in lines)
+            {
+                string[] parts = line.Split('|');
+                if (parts.Length == 3)
+                {
+                    string route = parts[0];
+                    int basePrice = int.Parse(parts[1]);
+                    string[] seatParts = parts[2].Split(',');
+                    var seats = new Dictionary<string, int>
+                    {
+                        { "Business", int.Parse(seatParts[0]) },
+                        { "Economy Plus", int.Parse(seatParts[1]) },
+                        { "Economy", int.Parse(seatParts[2]) },
+                        { "Economy (Window)", int.Parse(seatParts[3]) }
+                    };
+
+                    flights.Add(flights.Count + 1, new AdvancedFlightReservationSystem.Models.Flight(route, basePrice, seats));
+                }
             }
         }
     }
 
-    private static void InitializeFlights()
+    public void SaveFlights()
     {
-        string filePath = "flights.txt";
-        if (!File.Exists(filePath)) return;
-
-        using (StreamReader reader = new StreamReader(filePath))
+        using (StreamWriter sw = new StreamWriter(flightsFilePath))
         {
-            string line;
-            int flightCounter = 1;
-            while ((line = reader.ReadLine()) != null)
+            foreach (var flight in flights.Values)
             {
-                var parts = line.Split(',');
-                string route = parts[0];
-                int basePrice = int.Parse(parts[1]);
-
-                flights[flightCounter] = new Flight(route, basePrice);
-                flightCounter++;
+                sw.WriteLine($"{flight.Route}|{flight.BasePrice}|{flight.SeatsToString()}");
             }
+        }
+    }
+
+
+    public List<AdvancedFlightReservationSystem.Models.Flight> SearchFlights(string route)
+    {
+        return flights.Values.Where(f => f.Route.Contains(route)).ToList();
+    }
+
+    public Dictionary<int, AdvancedFlightReservationSystem.Models.Flight> GetFlights()
+    {
+        return flights;
+    }
+}
+
+public class ReservationService
+{
+    private List<AdvancedFlightReservationSystem.Models.Reservation> reservations = new List<AdvancedFlightReservationSystem.Models.Reservation>();
+
+    public void LoadReservations()
+    {
+        // Simulacja ładowania rezerwacji z bazy danych lub pliku
+    }
+
+    public void SaveReservations()
+    {
+        // Simulacja zapisywania rezerwacji do bazy danych lub pliku
+    }
+
+    public void AddReservation(AdvancedFlightReservationSystem.Models.User user, AdvancedFlightReservationSystem.Models.Flight flight, string seatClass, int passengerCount)
+    {
+        var reservation = new AdvancedFlightReservationSystem.Models.Reservation
+        {
+            User = user,
+            Flight = flight,
+            SeatClass = seatClass,
+            PassengerCount = passengerCount,
+            ReservationTime = DateTime.Now
+        };
+        reservations.Add(reservation);
+        SaveReservations();
+    }
+
+    public List<AdvancedFlightReservationSystem.Models.Reservation> GetUserReservations(AdvancedFlightReservationSystem.Models.User user)
+    {
+        return reservations.Where(r => r.User.Username == user.Username).ToList();
+    }
+}
+
+public class PaymentService
+{
+    public bool ProcessPayment(AdvancedFlightReservationSystem.Models.User user, double amount)
+    {
+        // Simulacja przetwarzania płatności
+        // Można dodać tutaj integrację z bramką płatności
+        return true;
+    }
+}
+
+// Główna klasa programu
+class Program
+{
+    private static UserService userService = new UserService();
+    private static FlightService flightService = new FlightService();
+    private static ReservationService reservationService = new ReservationService();
+    private static PaymentService paymentService = new PaymentService();
+    private static AdvancedFlightReservationSystem.Models.User loggedInUser;
+
+    static void Main(string[] args)
+    {
+        userService.LoadUsers();
+        flightService.LoadFlights();
+        reservationService.LoadReservations();
+
+        while (true)
+        {
+            Console.Clear();
+            if (loggedInUser == null)
+            {
+                Console.WriteLine("1. Zarejestruj się");
+                Console.WriteLine("2. Zaloguj się");
+                Console.WriteLine("0. Wyjdź");
+                Console.Write("Wybierz opcję: ");
+                string option = Console.ReadLine();
+
+                switch (option)
+                {
+                    case "1":
+                        Register();
+                        break;
+                    case "2":
+                        Login();
+                        break;
+                    case "0":
+                        return;
+                    default:
+                        Console.WriteLine("Niepoprawna opcja, spróbuj ponownie.");
+                        Console.ReadKey();
+                        break;
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Zalogowany jako: {loggedInUser.Username}");
+                Console.WriteLine("1. Zarezerwuj lot");
+                Console.WriteLine("2. Pokaż moje rezerwacje");
+                Console.WriteLine("3. Zmień hasło");
+                Console.WriteLine("4. Zmień email");
+                Console.WriteLine("5. Wyloguj się");
+                Console.WriteLine("0. Wyjdź");
+                Console.Write("Wybierz opcję: ");
+                string option = Console.ReadLine();
+
+                switch (option)
+                {
+                    case "1":
+                        BookFlight();
+                        break;
+                    case "2":
+                        ShowReservations();
+                        break;
+                    case "3":
+                        ChangePassword();
+                        break;
+                    case "4":
+                        ChangeEmail();
+                        break;
+                    case "5":
+                        loggedInUser = null;
+                        break;
+                    case "0":
+                        return;
+                    default:
+                        Console.WriteLine("Niepoprawna opcja, spróbuj ponownie.");
+                        Console.ReadKey();
+                        break;
+                }
+            }
+        }
+    }
+
+    private static void Register()
+    {
+        Console.Clear();
+        Console.Write("Podaj nazwę użytkownika: ");
+        string username = Console.ReadLine();
+        Console.Write("Podaj hasło: ");
+        string password = Console.ReadLine();
+        Console.Write("Podaj email: ");
+        string email = Console.ReadLine();
+
+        if (userService.RegisterUser(username, password, email))
+        {
+            Console.WriteLine("Rejestracja zakończona sukcesem.");
+        }
+        else
+        {
+            Console.WriteLine("Rejestracja nie powiodła się. Nazwa użytkownika lub email jest już w użyciu.");
+        }
+
+        Console.ReadKey();
+    }
+
+    private static void Login()
+    {
+        Console.Clear();
+        Console.Write("Podaj nazwę użytkownika: ");
+        string username = Console.ReadLine();
+        Console.Write("Podaj hasło: ");
+        string password = Console.ReadLine();
+
+        loggedInUser = userService.AuthenticateUser(username, password);
+        if (loggedInUser == null)
+        {
+            Console.WriteLine("Niepoprawna nazwa użytkownika lub hasło.");
+            Console.ReadKey();
         }
     }
 
     private static void BookFlight()
     {
         Console.Clear();
+        Console.WriteLine("Wybierz trasę:");
+        var flights = flightService.GetFlights();
         foreach (var flight in flights)
         {
             Console.WriteLine($"{flight.Key}. {flight.Value.Route} - Odlot: {flight.Value.GetFlightDate()}");
         }
-        Console.WriteLine("\n0. Wstecz");
+        Console.WriteLine("9. Wstecz");
 
-
-        Console.WriteLine("\nWybierz trasę:");
+        Console.Write("Wybierz opcję: ");
         int routeChoice;
         if (!int.TryParse(Console.ReadLine(), out routeChoice) || routeChoice < 1 || routeChoice > 9)
         {
-            Console.WriteLine("Niepoprawna opcja. \nNaciśnij dowolny klawisz, żeby wrócić do menu");
+            Console.WriteLine("Niepoprawna opcja.");
             Console.ReadKey();
             return;
         }
-        if (routeChoice == 0) return;
+        if (routeChoice == 9) return;
 
         if (!flights.ContainsKey(routeChoice))
         {
@@ -91,282 +465,90 @@ class Program
             Console.ReadKey();
             return;
         }
+
+        var selectedFlight = flights[routeChoice];
         Console.Clear();
-        Flight selectedFlight = flights[routeChoice];
         selectedFlight.DisplaySeats();
-        Console.WriteLine("\n0. Wstecz");
-        Console.WriteLine("\nWybierz klasę biletu: ");
+        Console.WriteLine("9. Wstecz");
+        Console.Write("Wybierz klasę biletu: ");
         string classOption = Console.ReadLine();
 
-        if (classOption == "0") return;
+        if (classOption == "9") return;
 
         Console.Clear();
-
-        // Pobieranie danych osobowych
-        Console.Write("Podaj imię: ");
-        string firstName = Console.ReadLine();
-        Console.Clear();
-        Console.Write("Podaj nazwisko: ");
-        string lastName = Console.ReadLine();
-        Console.Clear();
-        Console.Write("Podaj adres e-mail: ");
-        string email = Console.ReadLine();
-        Console.Clear();
-
-        Ticket ticket = selectedFlight.BookSeat(classOption);
+        var ticket = selectedFlight.BookSeat(classOption);
         if (ticket != null)
         {
-            ticket.Number = ticketNumber++;
-            ticket.FirstName = firstName;
-            ticket.LastName = lastName;
-            ticket.Email = email;
-            tickets.Add(ticket.Number, ticket);
-            SaveFlightData();
-            SaveTicketData();
-            Console.Clear();
-            Console.WriteLine($"Zarezerwowano bilet: {ticket}");
-            Console.WriteLine("Naciśnij dowolny klawisz, żeby wrócić do menu");
-            if (Console.ReadLine() == "") return;
+            double totalCost = ticket.Price;
+
+            Console.WriteLine($"Całkowity koszt: {totalCost} PLN");
+
+            if (paymentService.ProcessPayment(loggedInUser, totalCost))
+            {
+                reservationService.AddReservation(loggedInUser, selectedFlight, ticket.Seat, 1);
+                Console.WriteLine("Rezerwacja zakończona sukcesem.");
+            }
+            else
+            {
+                Console.WriteLine("Płatność nie powiodła się.");
+            }
         }
+
+        Console.WriteLine("9. Wstecz");
+        if (Console.ReadLine() == "9") return;
     }
 
-    private static void CheckFlight(string error = "")
+    private static void ShowReservations()
     {
         Console.Clear();
-        if (error != "")
-        {
-            Console.WriteLine(error);
-        }
-        Console.WriteLine("Podaj numer biletu: ");
-        int number;
-        if (!int.TryParse(Console.ReadLine(), out number))
-        {
-            Console.WriteLine("\nPodano nieprawidłowy numer biletu.");
-            CheckFlight();
-            return;
-        }
+        var reservations = reservationService.GetUserReservations(loggedInUser);
 
-        if (tickets.ContainsKey(number))
+        if (reservations.Any())
         {
-            Console.Clear();
-            Ticket ticket = tickets[number];
-            Console.WriteLine($"Dane biletu: {ticket}");
-            Console.WriteLine("1. Anuluj rezerwację");
-            Console.WriteLine("0. Wstecz");
-            Console.Write("\nWybierz opcję: ");
-            string option = Console.ReadLine();
-
-            if (option == "1")
+            Console.WriteLine("Twoje rezerwacje:");
+            foreach (var reservation in reservations)
             {
-                Flight flight = FindFlightByRoute(ticket.Route);
-                if (flight != null)
-                {
-                    flight.CancelSeat(ticket.Seat);
-                    tickets.Remove(number);
-                    SaveFlightData();
-                    SaveTicketData();
-                    Console.Clear();
-                    Console.WriteLine("Rezerwacja anulowana. \nKoszt anulacji: " + ticket.Price * 0.1 + " PLN");
-                    Console.WriteLine("\n0. Wstecz");
-                    if (Console.ReadLine() == "0") return;
-                }
-                else
-                {
-                    Console.WriteLine("Nie znaleziono lotu odpowiadającego temu biletowi. \nNaciśnij dowolny klawisz, żeby wrócić do menu");
-                    Console.ReadKey();
-                }
-            }
-            else if (option == "0")
-            {
-                return;
+                Console.WriteLine(reservation);
             }
         }
         else
         {
-            CheckFlight("Nie znaleziono biletu o podanym numerze.");
-        }
-    }
-
-    private static Flight FindFlightByRoute(string route)
-    {
-        foreach (var flight in flights)
-        {
-            if (flight.Value.Route == route)
-                return flight.Value;
-        }
-        return null;
-    }
-
-    private static void SaveFlightData()
-    {
-        string filePath = "flight_data.txt";
-        using (StreamWriter writer = new StreamWriter(filePath))
-        {
-            foreach (var flight in flights)
-            {
-                writer.WriteLine($"{flight.Key},{flight.Value.Route},{flight.Value.BasePrice},{flight.Value.SeatsToString()}");
-            }
-        }
-    }
-
-    private static void LoadFlightData()
-    {
-        string filePath = "flight_data.txt";
-        if (!File.Exists(filePath)) return;
-
-        using (StreamReader reader = new StreamReader(filePath))
-        {
-            string line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                var parts = line.Split(',');
-                int flightKey = int.Parse(parts[0]);
-                string route = parts[1];
-                int basePrice = int.Parse(parts[2]);
-                var seats = new Dictionary<string, int>
-                {
-                    { "Business", int.Parse(parts[3]) },
-                    { "Economy Plus", int.Parse(parts[4]) },
-                    { "Economy", int.Parse(parts[5]) },
-                    { "Economy (Window)", int.Parse(parts[6]) }
-                };
-
-                flights[flightKey] = new Flight(route, basePrice, seats);
-            }
-        }
-    }
-
-    private static void SaveTicketData()
-    {
-        string filePath = "tickets_data.json";
-        var options = new JsonSerializerOptions { WriteIndented = true };
-        string json = JsonSerializer.Serialize(tickets, options);
-        File.WriteAllText(filePath, json);
-    }
-
-    private static void LoadTicketData()
-    {
-        string filePath = "tickets_data.json";
-        if (!File.Exists(filePath)) return;
-
-        string json = File.ReadAllText(filePath);
-        tickets = JsonSerializer.Deserialize<Dictionary<int, Ticket>>(json);
-        if (tickets != null && tickets.Count > 0)
-        {
-            ticketNumber = tickets.Last().Key + 1;
-        }
-    }
-}
-
-class Flight
-{
-    public string Route { get; private set; }
-    public int BasePrice { get; private set; }
-    private Dictionary<string, int> seats = new Dictionary<string, int>();
-    private DateTime flightDate;
-    private Random random = new Random();
-
-    public Flight(string route, int basePrice)
-    {
-        Route = route;
-        BasePrice = basePrice;
-        seats["Business"] = 18;
-        seats["Economy Plus"] = 18;
-        seats["Economy"] = 96;
-        seats["Economy (Window)"] = 52;
-        flightDate = GenerateFlightDate();
-    }
-
-    public Flight(string route, int basePrice, Dictionary<string, int> seats)
-    {
-        Route = route;
-        BasePrice = basePrice;
-        this.seats = seats;
-        flightDate = GenerateFlightDate();
-    }
-
-    private DateTime GenerateFlightDate()
-    {
-        int daysToAdd = random.Next(1, 11);
-        int hoursToAdd = random.Next(0, 24);
-        int minutesToAdd = random.Next(0, 12) * 5;
-        return DateTime.Today.AddDays(daysToAdd).AddHours(hoursToAdd).AddMinutes(minutesToAdd);
-    }
-
-    public string GetFlightDate()
-    {
-        return flightDate.ToString("yyyy-MM-dd HH:mm");
-    }
-
-    public void DisplaySeats()
-    {
-        Console.WriteLine($"1. Economy: {BasePrice} PLN (Wolny miejsc: {seats["Economy"]})");
-        Console.WriteLine($"2. Economy (miejsce przy oknie): {BasePrice * 1.2} PLN (Wolnych miejsc: {seats["Economy (Window)"]})");
-        Console.WriteLine($"3. Economy Plus: {BasePrice * 2.0} PLN (Wolnych miejsc: {seats["Economy Plus"]})");
-        Console.WriteLine($"4. Business: {BasePrice * 3.0} PLN (Wolnych miejsc: {seats["Business"]})");
-    }
-
-    public Ticket BookSeat(string classOption)
-    {
-        string selectedClass = classOption switch
-        {
-            "1" => "Economy",
-            "2" => "Economy (Window)",
-            "3" => "Economy Plus",
-            "4" => "Business",
-            _ => null
-        };
-
-        if (selectedClass == null || seats[selectedClass] == 0)
-        {
-            Console.WriteLine("Niepoprawna opcja lub brak miejsc w wybranej klasie. \nNaciśnij dowolny klawisz, żeby wrócić do menu");
-            return null;
+            Console.WriteLine("Brak rezerwacji.");
         }
 
-        seats[selectedClass]--;
-        double priceMultiplier = selectedClass switch
-        {
-            "Economy" => 1.0,
-            "Economy (Window)" => 1.2,
-            "Economy Plus" => 2.0,
-            "Business" => 3.0,
-            _ => 1.0
-        };
-        double price = BasePrice * priceMultiplier;
-        return new Ticket
-        {
-            Route = Route,
-            Seat = selectedClass,
-            Price = price
-        };
+        Console.WriteLine("9. Wstecz");
+        if (Console.ReadLine() == "9") return;
     }
 
-    public void CancelSeat(string seatClass)
+    private static void ChangePassword()
     {
-        if (seats.ContainsKey(seatClass))
+        Console.Clear();
+        Console.Write("Nowe hasło: ");
+        string newPassword = Console.ReadLine();
+
+        if (userService.ChangePassword(loggedInUser, newPassword))
         {
-            seats[seatClass]++;
+            Console.WriteLine("Hasło zmienione pomyślnie.");
         }
+
+        Console.ReadKey();
     }
 
-    public string SeatsToString()
+    private static void ChangeEmail()
     {
-        return $"{seats["Business"]},{seats["Economy Plus"]},{seats["Economy"]},{seats["Economy (Window)"]}";
-    }
-}
+        Console.Clear();
+        Console.Write("Nowy email: ");
+        string newEmail = Console.ReadLine();
 
-class Ticket
-{
-    public int Number { get; set; }
-    public string Route { get; set; }
-    public string Seat { get; set; }
-    public double Price { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Email { get; set; }
+        if (userService.ChangeEmail(loggedInUser, newEmail))
+        {
+            Console.WriteLine("Email zmieniony pomyślnie.");
+        }
+        else
+        {
+            Console.WriteLine("Zmiana emaila nie powiodła się. Podany email jest już w użyciu.");
+        }
 
-    public override string ToString()
-    {
-        return $"Bilet nr {Number} \nTrasa: {Route} \nKlasa: {Seat} \nCena: {Price} PLN \nImię: {FirstName} \nNazwisko: {LastName} \nEmail: {Email} \n";
+        Console.ReadKey();
     }
 }

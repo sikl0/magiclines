@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "NE7U+zrDDPmHorIDIAq19gD3Bz4eKC+9v44AZF+F/NmHM3WmUyodgQhYVVMugJvx0xqJQVf9LIHz5ID2/byZdw==",
+  "dgSpecHash": "x1gY6AltevfaDZ7nS6ZIYnzYPOio/hdoNQqW9hFCOPxYh53nEMmUDyr1njBjM/6OLjmdskB9OVqcDJU8KSMuOw==",
   "success": true,
   "projectFilePath": "C:\\Users\\kacpe\\Documents\\Projekty\\MagicLines\\magiclines\\MagicLines\\MagicLines\\MagicLines.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\kacpe\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
+    "C:\\Users\\kacpe\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
   "logs": []
 }
