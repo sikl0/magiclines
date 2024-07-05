@@ -13,6 +13,11 @@ Witaj w naszym programie do rezerwacji lotów! Ten program umożliwia użytkowni
 
 #### Funkcje
 
+1. **System rejestracji**
+   - Użytkownicy mogą się zarejestrować
+   - Po rejestracji użytkownicy mogą się zalogować
+   - Możliwa jest również zmiana danych i hasła oraz sprawdzenie swoich rezerwacji
+     
 1. **Rezerwacja Lotu**
    - Użytkownicy mogą wybrać dostępne trasy lotów.
    - Wybierają klasę biletu (Economy, Economy (Okno), Economy Plus, Business).
@@ -25,17 +30,26 @@ Witaj w naszym programie do rezerwacji lotów! Ten program umożliwia użytkowni
 3. **Zachowanie Danych**
    - Lista dostępnych miejsc (`flight_data.txt`) są ładowane przy starcie programu.
    - Dane o biletach (zarezerwowane bilety) są zapisywane w formacie JSON i przechowywane w pliku (`tickets_data.json`).
-   - Dane o lotach (trasy, ceny podstawowe) są przechowywane w pliku tekstowym (`flights.txt`). 
+   - Dane o użytkownikach są szyfrowane i przechowywane w pliku JSON (`users.json`). 
 
 #### Opcje Menu
 
-Po uruchomieniu programu użytkownicy mają do dyspozycji następujące opcje:
+Po uruchomieniu programu oraz zalogowaniu się, bądź rejestracji użytkownicy mają do dyspozycji następujące opcje:
 
 - **1. Zarezerwuj lot**
   - Pozwala na dokonanie rezerwacji biletu na wybrany lot.
 
-- **2. Sprawdź lot**
+- **2. Pokaż moje rezerwacje**
   - Umożliwia sprawdzenie szczegółów zarezerwowanego biletu oraz zarządzanie rezerwacjami.
+ 
+- **3. Zmień hasło**
+  - Umożliwia zmianę hasła
+ 
+- **4. Zmień email**
+  - Umożliwia zmianę adresu email
+ 
+- **5. Wyloguj się**
+  - Umożliwia wylogowanie się
 
 - **0. Wyjdź**
   - Kończy działanie programu i zapisuje wszystkie dane.
@@ -46,7 +60,6 @@ Po uruchomieniu programu użytkownicy mają do dyspozycji następujące opcje:
    - Wybierz opcję `1`.
    - Wybierz interesującą Cię trasę lotu z listy.
    - Wybierz klasę biletu (Economy, Economy (Okno), Economy Plus, Business).
-   - Podaj swoje dane osobowe, gdy zostaniesz o to poproszony.
 
 2. **Sprawdzanie/Anulowanie Rezerwacji**
    - Wybierz opcję `2`.
@@ -58,16 +71,15 @@ Po uruchomieniu programu użytkownicy mają do dyspozycji następujące opcje:
 
 #### Struktura Plików
 
-- **`flights.txt`**
+- **`flight_data.txt`**
   - Przechowuje szczegóły lotów, w tym trasę, cenę podstawową.
-  - Format danych: `numerTrasy,nazwaTrasy,cenaPodstawowa`
+  - Format danych: `nazwaTrasy|cenaPodstawowa|ilość,Miejsc,W,Poszczególnych,Klasach`
 
 - **`tickets_data.json`**
   - Przechowuje zarezerwowane bilety w formacie JSON, zawierające numer biletu, trasę, klasę miejsc, cenę oraz dane pasażera.
 
-- **`flight_data.txt`**
-  - Przechowuje lisczbę dostępnych miejsc.
-  - Format danych:`miejscaBiznes,miejscaEconomyPlus,miejscaEconomy,miejscaEconomyOkno`
+- **`users.json`**
+  - Przechowuje zaszyfrowane dane użytkowników w formacie JSON, zawierające login, hasło, email i ilość punktów lojalnościowych
 
 #### Uwagi
 
@@ -80,11 +92,19 @@ Po uruchomieniu programu użytkownicy mają do dyspozycji następujące opcje:
 Ten program korzysta z następujących bibliotek:
 - `System.IO` do operacji na plikach.
 - `System.Text.Json` do serializacji danych w formacie JSON.
+- `BCrypt.Net-Next` do hashowania haseł.
+- `Newtonsoft.Json` do obsługi plików JSON.
 
 ### Konfiguracja
 
 Upewnij się, że w folderze z programem znajdują się następujące pliki:
-- `flights.txt` (początkowo pusty lub utworzony przez program, format danych jak powyżej). Można dopisywać nowe kierunki lotów.
 - `tickets_data.json` (początkowo pusty lub utworzony przez program)
 - `flight_data.txt`(Liczba aktulanie dostępnych miejsc, jest tworzony przez program gdy go nie ma i na bieżąco aktualizowany przez program)
+
+### Autorzy
+
+Program został napisany przez grupę 5 studentów I roku kierunku Informatyka z Uniwersytetu WSB Merito w Chorzowie:
+- Mateusz Nocoń
+- Patryk Otrębski
+- Kacper Olkis
   
