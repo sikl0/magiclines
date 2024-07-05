@@ -6,6 +6,9 @@ Witaj w naszym programie do rezerwacji lotów! Ten program umożliwia użytkowni
 
 ![UML](https://github.com/sikl0/magiclines/assets/45985086/4785e64b-81ae-4b33-afc3-e52e97f4650a)
 
+#### Wykorzystane technologie
+![csharp](https://github.com/sikl0/magiclines/assets/45985086/64251bfe-714b-4019-885e-33c502ee0499)
+
 
 
 #### Funkcje
