@@ -4,7 +4,8 @@ Witaj w naszym programie do rezerwacji lotów! Ten program umożliwia użytkowni
 
 #### Diagram UML
 
-![UML](https://github.com/sikl0/magiclines/assets/45985086/e75f112c-5582-454a-aab5-a12f6d01acd5)
+![UML](https://github.com/sikl0/magiclines/assets/45985086/4785e64b-81ae-4b33-afc3-e52e97f4650a)
+
 
 
 #### Funkcje
