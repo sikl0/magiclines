@@ -16,7 +16,7 @@ namespace AdvancedFlightReservationSystem.Models
 
         public override string ToString()
         {
-            return $"{Flight.Route}, {Flight.GetFlightDate()}, Klasa: {SeatClass}, Pasażerów: {PassengerCount}, Rezerwacja: {ReservationTime:dd.MM.yyyy HH:mm}";
+            return $"{Flight.Route}, {Flight.GetFlightDate()}, Klasa: {SeatClass}, Pasażerów: {PassengerCount}, Rezerwacja: {ReservationTime:dd.MM.yyyy HH:mm}\n";
         }
     }
 }

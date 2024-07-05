@@ -11,12 +11,12 @@ public class ReservationService
 
     public void LoadReservations()
     {
-        // Simulacja ładowania rezerwacji z bazy danych lub pliku
+        // z pliku, todo
     }
 
     public void SaveReservations()
     {
-        // Simulacja zapisywania rezerwacji do bazy danych lub pliku
+        // do pliku, todo
     }
 
     public void AddReservation(AdvancedFlightReservationSystem.Models.User user, AdvancedFlightReservationSystem.Models.Flight flight, string seatClass, int passengerCount)

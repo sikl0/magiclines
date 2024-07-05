@@ -7,7 +7,6 @@ using BCrypt.Net;
 using System.Xml;
 using AdvancedFlightReservationSystem.Models;
 
-// Główna klasa programu
 class Program
 {
     private static UserService userService = new UserService();
@@ -27,9 +26,10 @@ class Program
             Console.Clear();
             if (loggedInUser == null)
             {
-                Console.WriteLine("1. Zarejestruj się");
-                Console.WriteLine("2. Zaloguj się");
-                Console.WriteLine("0. Wyjdź");
+                Console.WriteLine("WITAJ W 'MAGIC LINES'\n");
+                Console.WriteLine("1. Zarejestruj się\n");
+                Console.WriteLine("2. Zaloguj się\n");
+                Console.WriteLine("0. Wyjdź\n");
                 Console.Write("Wybierz opcję: ");
                 string option = Console.ReadLine();
 
@@ -51,13 +51,14 @@ class Program
             }
             else
             {
-                Console.WriteLine($"Zalogowany jako: {loggedInUser.Username}");
-                Console.WriteLine("1. Zarezerwuj lot");
-                Console.WriteLine("2. Pokaż moje rezerwacje");
-                Console.WriteLine("3. Zmień hasło");
-                Console.WriteLine("4. Zmień email");
-                Console.WriteLine("5. Wyloguj się");
-                Console.WriteLine("0. Wyjdź");
+                Console.WriteLine("MAGIC LINES\n");
+                Console.WriteLine($"Zalogowany jako: {loggedInUser.Username}\n");
+                Console.WriteLine("1. Zarezerwuj lot\n");
+                Console.WriteLine("2. Pokaż moje rezerwacje\n");
+                Console.WriteLine("3. Zmień hasło\n");
+                Console.WriteLine("4. Zmień email\n");
+                Console.WriteLine("5. Wyloguj się\n");
+                Console.WriteLine("0. Wyjdź\n");
                 Console.Write("Wybierz opcję: ");
                 string option = Console.ReadLine();
 
@@ -92,6 +93,7 @@ class Program
     private static void Register()
     {
         Console.Clear();
+        Console.WriteLine("MAGICLINES\n");
         Console.Write("Podaj nazwę użytkownika: ");
         string username = Console.ReadLine();
         Console.Write("Podaj hasło: ");
@@ -101,11 +103,11 @@ class Program
 
         if (userService.RegisterUser(username, password, email))
         {
-            Console.WriteLine("Rejestracja zakończona sukcesem.");
+            Console.WriteLine("\nRejestracja zakończona sukcesem.");
         }
         else
         {
-            Console.WriteLine("Rejestracja nie powiodła się. Nazwa użytkownika lub email jest już w użyciu.");
+            Console.WriteLine("\nRejestracja nie powiodła się. Nazwa użytkownika lub email jest już w użyciu.");
         }
 
         Console.ReadKey();
@@ -114,6 +116,7 @@ class Program
     private static void Login()
     {
         Console.Clear();
+        Console.WriteLine("MAGIC LINES\n");
         Console.Write("Podaj nazwę użytkownika: ");
         string username = Console.ReadLine();
         Console.Write("Podaj hasło: ");
@@ -130,13 +133,14 @@ class Program
     private static void BookFlight()
     {
         Console.Clear();
-        Console.WriteLine("Wybierz trasę:");
+        Console.WriteLine("MAGIC LINES\n");
+        Console.WriteLine("Wybierz trasę: \n");
         var flights = flightService.GetFlights();
         foreach (var flight in flights)
         {
-            Console.WriteLine($"{flight.Key}. {flight.Value.Route} - Odlot: {flight.Value.GetFlightDate()}");
+            Console.WriteLine($"{flight.Key}. {flight.Value.Route} - Odlot: {flight.Value.GetFlightDate()}\n");
         }
-        Console.WriteLine("9. Wstecz");
+        Console.WriteLine("9. Wstecz\n");
 
         Console.Write("Wybierz opcję: ");
         int routeChoice;
@@ -157,9 +161,10 @@ class Program
 
         var selectedFlight = flights[routeChoice];
         Console.Clear();
+        Console.WriteLine("MAGICLINES\n");
         selectedFlight.DisplaySeats();
-        Console.WriteLine("9. Wstecz");
-        Console.Write("Wybierz klasę biletu: ");
+        Console.WriteLine("\n9. Wstecz\n");
+        Console.Write("Wybierz klasę biletu: \n");
         string classOption = Console.ReadLine();
 
         if (classOption == "9") return;
@@ -169,13 +174,13 @@ class Program
         if (ticket != null)
         {
             double totalCost = ticket.Price;
-
-            Console.WriteLine($"Całkowity koszt: {totalCost} PLN");
+            Console.WriteLine("MAGIC LINES\n");
+            Console.WriteLine($"Całkowity koszt: {totalCost} PLN\n");
 
             if (paymentService.ProcessPayment(loggedInUser, totalCost))
             {
                 reservationService.AddReservation(loggedInUser, selectedFlight, ticket.Seat, 1);
-                Console.WriteLine("Rezerwacja zakończona sukcesem.");
+                Console.WriteLine("Rezerwacja zakończona sukcesem.\n");
             }
             else
             {
@@ -194,7 +199,8 @@ class Program
 
         if (reservations.Any())
         {
-            Console.WriteLine("Twoje rezerwacje:");
+            Console.WriteLine("MAGIC LINES\n");
+            Console.WriteLine("Twoje rezerwacje: \n");
             foreach (var reservation in reservations)
             {
                 Console.WriteLine(reservation);
@@ -202,7 +208,7 @@ class Program
         }
         else
         {
-            Console.WriteLine("Brak rezerwacji.");
+            Console.WriteLine("Brak rezerwacji.\n");
         }
 
         Console.WriteLine("9. Wstecz");
@@ -212,12 +218,13 @@ class Program
     private static void ChangePassword()
     {
         Console.Clear();
+        Console.WriteLine("MAGIC LINES\n");
         Console.Write("Nowe hasło: ");
         string newPassword = Console.ReadLine();
 
         if (userService.ChangePassword(loggedInUser, newPassword))
         {
-            Console.WriteLine("Hasło zmienione pomyślnie.");
+            Console.WriteLine("\nHasło zmienione pomyślnie.");
         }
 
         Console.ReadKey();
@@ -226,12 +233,13 @@ class Program
     private static void ChangeEmail()
     {
         Console.Clear();
+        Console.WriteLine("MAGIC LINES\n");
         Console.Write("Nowy email: ");
         string newEmail = Console.ReadLine();
 
         if (userService.ChangeEmail(loggedInUser, newEmail))
         {
-            Console.WriteLine("Email zmieniony pomyślnie.");
+            Console.WriteLine("\nEmail zmieniony pomyślnie.");
         }
         else
         {

@@ -13,7 +13,6 @@ public class FlightService
 
     public void LoadFlights()
     {
-        // Nowe ładowanie lotów z pliku flight_data.txt
         if (File.Exists(flightsFilePath))
         {
             string[] lines = File.ReadAllLines(flightsFilePath);

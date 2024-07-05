@@ -48,10 +48,10 @@ namespace AdvancedFlightReservationSystem.Models
 
         public void DisplaySeats()
         {
-            Console.WriteLine($"1. Economy: {BasePrice} PLN ({seats["Economy"]})");
-            Console.WriteLine($"2. Economy (miejsce przy oknie): {BasePrice * 1.2} PLN ({seats["Economy (Window)"]})");
-            Console.WriteLine($"3. Economy Plus: {BasePrice * 2.0} PLN ({seats["Economy Plus"]})");
-            Console.WriteLine($"4. Business: {BasePrice * 3.0} PLN ({seats["Business"]})");
+            Console.WriteLine($"1. Economy: {BasePrice} PLN ({seats["Economy"]})\n");
+            Console.WriteLine($"2. Economy (miejsce przy oknie): {BasePrice * 1.2} PLN ({seats["Economy (Window)"]})\n");
+            Console.WriteLine($"3. Economy Plus: {BasePrice * 2.0} PLN ({seats["Economy Plus"]})\n");
+            Console.WriteLine($"4. Business: {BasePrice * 3.0} PLN ({seats["Business"]})\n");
         }
 
         public Ticket BookSeat(string classOption)

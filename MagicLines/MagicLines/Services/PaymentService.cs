@@ -9,8 +9,7 @@ public class PaymentService
 {
     public bool ProcessPayment(AdvancedFlightReservationSystem.Models.User user, double amount)
     {
-        // Simulacja przetwarzania płatności
-        // Można dodać tutaj integrację z bramką płatności
+        // Symulacja płatności
         return true;
     }
 }
