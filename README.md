@@ -103,7 +103,7 @@ Upewnij się, że w folderze z programem znajdują się następujące pliki:
 
 ### Autorzy
 
-Program został napisany przez grupę 5 studentów I roku kierunku Informatyka z Uniwersytetu WSB Merito w Chorzowie:
+Program został napisany przez grupę 3 studentów I roku kierunku Informatyka z Uniwersytetu WSB Merito w Chorzowie:
 - Mateusz Nocoń
 - Patryk Otrębski
 - Kacper Olkis
